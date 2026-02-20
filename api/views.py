@@ -4,17 +4,30 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 from db_conn import db
+import uuid
 
 
 @api_view(['GET','POST'])
 def employeesView(request):
     if request.method == 'GET':
-        employees = Employee.objects.all()
+        # employees = Employee.objects.all()
+        employees = db['employees']
+        employees = employees.find({})
         serializer = EmployeeSerializer(employees, many=True)
+        print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     elif request.method == 'POST':
-        serializer = EmployeeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_OK)
+        try:
+            data=request.data.copy()
+            data['employee_id'] = str(uuid.uuid4())
+            serializer = EmployeeSerializer(data=data)
+            if serializer.is_valid():
+                employees = db['employees']
+                
+                # print(serializer.validated_data)
+                employees.insert_one(data)
+                # serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return print("Error:", e)

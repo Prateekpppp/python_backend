@@ -10,8 +10,9 @@ class Employee(models.Model):
     employee_id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
-        editable=False # Prevents the ID from being changed in the Django admin or forms
+        editable=True # Prevents the ID from being changed in the Django admin or forms
     )
+    # employee_id = models.CharField(max_length=50)
     fullName = models.CharField(max_length=50)
     email = models.CharField(max_length=100)
     department = models.CharField(max_length=50)

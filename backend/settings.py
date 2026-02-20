@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'employees',
     'api',
+    # 'mongoengine.django',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -89,10 +90,18 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django',
-#         'HOST': 'mongodb+srv://prateekpppp4:prateek4@cluster0.lokolyb.mongodb.net',
+#         'CLIENT': {
+#                 'host': 'mongodb+srv://prateekpppp4:prateek4@cluster0.lokolyb.mongodb.net',
+#             },
 #         'NAME': 'employee_data',
 #     }
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation
