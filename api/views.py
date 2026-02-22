@@ -43,21 +43,44 @@ def employee(request, id):
             employee = employees.find_one({
                 "employee_id": id
             })
-            print(employee)
+            # print(employee)
             return Response(employee, status=status.HTTP_200_CREATED)
         elif request.method == 'DELETE':
             employee = employees.delete_one({
                 "employee_id": id
             })
-            print(employee)
+            # print(employee)
             return Response(status=status.HTTP_201_DELETED)
     except Exception as e:
         return  e
         
    
-# @api_view(['GET'])     
-# def employeeattendance(request):
+@api_view(['GET'])     
+def employeeattendance(request):
     
-#     try:
-#         if request.method == "GET":
+    try:
+        if request.method == "GET":
+            pipeline = [
+                {
+                    "$lookup": {
+                        "from": "attendance",
+                        "localField": "employee_id",
+                        "foreignField": "employee_id",
+                        "as": "attendance"
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": 0,
+                        "name": 1,
+                        "employee_code": 1,
+                        "attendance": 1
+                    }
+                }
+            ]
             
+            employees = db['employees']
+            employees = employees.aggregate(pipeline)
+            serializer = EmployeeSerializer(employees, many=True)
+            print(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
