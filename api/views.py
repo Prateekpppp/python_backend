@@ -54,3 +54,10 @@ def employee(request, id):
     except Exception as e:
         return  e
         
+   
+# @api_view(['GET'])     
+# def employeeattendance(request):
+    
+#     try:
+#         if request.method == "GET":
+            
