@@ -25,7 +25,7 @@ class Employeeattendance(models.Model):
     employee_id = models.CharField(max_length=100)
     # date = models.DateField(default=timezone.now)
     date = models.CharField(max_length=50)
-    status = models.IntegerField(max_length=10)
+    status = models.IntegerField()
     
     def __str__(self):
         return self.employee_id
