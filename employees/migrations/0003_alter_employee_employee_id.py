@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='employee',
+            model_name='Employee',
             name='employee_id',
             field=models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False),
         ),

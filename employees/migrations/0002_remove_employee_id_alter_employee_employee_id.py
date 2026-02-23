@@ -12,11 +12,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RemoveField(
-            model_name='employee',
+            model_name='Employee',
             name='id',
         ),
         migrations.AlterField(
-            model_name='employee',
+            model_name='Employee',
             name='employee_id',
             field=models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False),
         ),
