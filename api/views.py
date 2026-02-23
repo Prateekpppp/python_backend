@@ -68,34 +68,75 @@ def employeeattendance(request):
     
     try:
         if request.method == "GET":
-            pipeline = [
-                {
-                    "$lookup": {
-                        "from": "attendance",
-                        "localField": "employee_id",
-                        "foreignField": "employee_id",
-                        "as": "attendance"
-                    }
-                },
-                {
-                    "$unwind": {
-                        "path": "$attendance",
-                        "preserveNullAndEmptyArrays": True
-                    }
-                },
-                {
-                    "$project": {
-                        "_id": 0,
-                        "employee_id": 1,
-                        "fullName": 1,
-                        "email": 1,
-                        "department": 1,
-                        "status": "$attendance.status",
-                        "date": "$attendance.date"
-                    }
-                }
-            ]
             
+            # pipeline = [
+            #     {
+            #         "$lookup": {
+            #             "from": "attendance",
+            #             "localField": "employee_id",
+            #             "foreignField": "employee_id",
+            #             "as": "attendance"
+            #         }
+            #     },
+            #     {
+            #         "$unwind": {
+            #             "path": "$attendance",
+            #             "preserveNullAndEmptyArrays": True
+            #         }
+            #     },
+            #     {
+            #         "$project": {
+            #             "_id": 0,
+            #             "employee_id": 1,
+            #             "fullName": 1,
+            #             "email": 1,
+            #             "department": 1,
+            #             "status": "$attendance.status",
+            #             "date": "$attendance.date"
+            #         }
+            #     }
+            # ]
+            
+            print("request.GET.get('date')--",request.GET.get('date'))
+            date = request.GET.get('date')
+            
+            pipeline = [
+            {
+                "$lookup": {
+                    "from": "attendance",
+                    "let": {"empId": "$employee_id"},
+                    "pipeline": [
+                        {
+                            "$match": {
+                                "$expr": {
+                                    "$and": [
+                                        {"$eq": ["$employee_id", "$$empId"]},
+                                        {"$eq": ["$date", date]}
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    "as": "attendance"
+                }
+            },
+            {
+                "$unwind": {
+                    "path": "$attendance",
+                    "preserveNullAndEmptyArrays": True
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "employee_id": 1,
+                    "fullName": 1,
+                    "email": 1,
+                    "department": 1,
+                    "status": "$attendance.status"
+                }
+            }
+        ]
             employees = db['employees']
             employees = list(employees.aggregate(pipeline))
             # employees = employees.aggregate(pipeline)
