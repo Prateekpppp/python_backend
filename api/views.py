@@ -40,6 +40,7 @@ def employeesView(request):
             )
 
 
+@api_view(['GET','POST','DELETE'])
 @csrf_exempt
 def employee(request, id):
     try:
