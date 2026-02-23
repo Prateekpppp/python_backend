@@ -31,7 +31,7 @@ def employeesView(request):
                 # print(serializer.validated_data)
                 employees.insert_one(data)
                 # serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response({"ok": True}, status=status.HTTP_201_CREATED)
          
         except Exception as e:
             return Response(
