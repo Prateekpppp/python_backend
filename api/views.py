@@ -40,8 +40,8 @@ def employeesView(request):
             )
 
 
-@api_view(['GET','POST','DELETE'])
 @csrf_exempt
+@api_view(['GET','POST','DELETE'])
 def employee(request, id):
     try:
         employees = db['employees']
