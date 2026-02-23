@@ -25,12 +25,13 @@ def employeesView(request):
             data=request.data.copy()
             data['employee_id'] = str(uuid.uuid4())
             serializer = EmployeeSerializer(data=data)
+            # print(serializer)
             if serializer.is_valid():
                 employees = db['employees']
-                
-                # print(serializer.validated_data)
+                print(employees)
                 employees.insert_one(data)
-                # serializer.save()
+                print('after',employees)
+                
                 return Response({"ok": True}, status=status.HTTP_201_CREATED)
          
         except Exception as e:
