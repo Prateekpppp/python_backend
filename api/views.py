@@ -26,10 +26,10 @@ def employeesView(request):
             data['employee_id'] = str(uuid.uuid4())
             serializer = EmployeeSerializer(data=data)
             if serializer.is_valid():
-                print(db['employees'],'data',data)
+                # print(db['employees'],'data',data)
                 employees = db['employees']
                 
-                employees.insert_one(data)
+                employees = employees.insert_one(serializer.data)
                 # serializer.save()
                 return Response({"ok": True}, status=status.HTTP_201_CREATED)
          
