@@ -3,6 +3,9 @@ from employees.models import Employee
 from employees.models import Employeeattendance
 
 class EmployeeSerializer(serializers.ModelSerializer):
+    # employee_id = serializers.CharField()
+    # name = serializers.CharField()
+    # email = serializers.EmailField()
     class Meta:
         model = Employee
         fields = "__all__"
