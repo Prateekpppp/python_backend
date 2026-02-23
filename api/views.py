@@ -1,5 +1,6 @@
 from employees.models import Employee
 from .serializers import EmployeeSerializer
+from .serializers import AttendanceSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -31,11 +32,15 @@ def employeesView(request):
                 employees.insert_one(data)
                 # serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+         
         except Exception as e:
-            return  e
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
-@method_decorator(csrf_exempt, name='dispatch')
+@csrf_exempt
 def employee(request, id):
     try:
         employees = db['employees']
@@ -49,13 +54,16 @@ def employee(request, id):
             employee = employees.delete_one({
                 "employee_id": id
             })
-            # print(employee)
-            return Response(status=status.HTTP_201_DELETED)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+     
     except Exception as e:
-        return  e
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
         
    
-@api_view(['GET'])     
+@api_view(['GET','POST'])     
 def employeeattendance(request):
     
     try:
@@ -70,17 +78,59 @@ def employeeattendance(request):
                     }
                 },
                 {
+                    "$unwind": {
+                        "path": "$attendance",
+                        "preserveNullAndEmptyArrays": True
+                    }
+                },
+                {
                     "$project": {
                         "_id": 0,
-                        "name": 1,
-                        "employee_code": 1,
-                        "attendance": 1
+                        "employee_id": 1,
+                        "fullName": 1,
+                        "email": 1,
+                        "department": 1,
+                        "status": "$attendance.status",
+                        "date": "$attendance.date"
                     }
                 }
             ]
             
             employees = db['employees']
-            employees = employees.aggregate(pipeline)
-            serializer = EmployeeSerializer(employees, many=True)
-            print(serializer.data)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            employees = list(employees.aggregate(pipeline))
+            # employees = employees.aggregate(pipeline)
+            # serializer = EmployeeSerializer(employees, many=True)
+            print(employees)
+            return Response(employees, status=status.HTTP_200_OK)
+        
+        elif request.method == "POST":
+            
+            serializer = AttendanceSerializer(data=request.data)
+            print(serializer)
+            if serializer.is_valid():
+                employees = db['attendance']
+                
+                data = serializer.validated_data
+                
+                employees.update_one(
+                    {
+                        "employee_id": data.get("employee_id"),
+                        "date": data.get("date")
+                    },
+                    {
+                        "$set": {
+                            # "status": data.get("status"),
+                            "status": data['status'],
+                        }
+                    },
+                    upsert=True
+                )
+                
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+         
+        
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

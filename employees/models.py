@@ -1,10 +1,9 @@
 from django.db import models
+from django.utils import timezone
 from db_conn import db
 import uuid
 
 # Create your models here.
-
-employees = db['Employee']
 
 class Employee(models.Model):
     employee_id = models.UUIDField(
@@ -20,3 +19,13 @@ class Employee(models.Model):
     # string representation of employee model
     def __str__(self):
         return self.fullName
+    
+    
+class Employeeattendance(models.Model):
+    employee_id = models.CharField()
+    # date = models.DateField(default=timezone.now)
+    date = models.CharField()
+    status = models.IntegerField()
+    
+    def __str__(self):
+        return self.employee_id
